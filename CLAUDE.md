@@ -2,18 +2,25 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Core Project Configuration
+
+- **Node.js Version**: `>=24.0.0`
+- **Module System**: **CommonJS**. The project compiles TypeScript to CommonJS modules.
+- **Import Paths**: Use relative imports without `.js` extensions (e.g., `import { User } from './entity/user'`)
+- **Linter**: ESLint with Prettier, configured in `eslint.config.js` using CommonJS syntax
+
 ## Common Commands
 
 ### Build and Development
 
 - `npm run build` - Compile TypeScript to JavaScript in `build/` directory
 - `npm run build:watch` - Compile TypeScript in watch mode for development
-- `npm run dev` - Start development server (requires build first)
+- `npm run dev` - Start development server with nodemon (requires build first)
 - `npm start` - Start production server from compiled build
 
 ### Testing
 
-- `npm test` - Run Jest tests on compiled JavaScript files
+- `npm test` - Run Jest tests directly on TypeScript source files
 - `npm run ci:test` - Full CI test pipeline (build, migrate test DB, run tests)
 
 ### Database Management
@@ -42,14 +49,12 @@ This is a Fastify-based TypeScript API with TypeORM for database operations:
 
 ### Key Patterns
 
-#### Module Aliases
+#### Import Strategy
 
-The project uses module aliases defined in both `tsconfig.json` and `package.json`:
-
-- `@api/*` → `build/api/*`
-- `@entity/*` → `build/entity/*`
-- `@data-source` → `build/data-source/index.js`
-- `@server` → `build/server.js`
+The project uses standard TypeScript imports with relative paths:
+- Use relative imports without file extensions: `import { User } from './entity/user'`
+- TypeScript compiler handles path resolution and compiles to CommonJS
+- No module aliases are used - all imports are explicit relative paths
 
 #### Database Integration
 
@@ -77,7 +82,7 @@ The application uses environment variables for configuration:
 
 1. Clean previous build (`npm run clean`)
 2. Lint code (`npm run lint`)
-3. Compile TypeScript (`tsc`)
+3. Compile TypeScript to CommonJS (`tsc`)
 4. Run from `build/` directory
 
-Note: The project compiles to CommonJS modules and uses `module-alias/register` for path resolution at runtime.
+The project compiles to CommonJS modules with standard `require()` and `module.exports` syntax.
