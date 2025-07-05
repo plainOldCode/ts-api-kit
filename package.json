@@ -24,6 +24,9 @@
     "type": "git",
     "url": "git+https://github.com/your-username/fastify-typescript-starter.git"
   },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "keywords": [
     "fastify",
     "typescript",
