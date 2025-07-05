@@ -1,5 +1,5 @@
 import { FastifyInstance, fastify } from 'fastify';
-import ping from './ping.js';
+import ping from './ping';
 
 describe('Ping API', () => {
   let server: FastifyInstance;

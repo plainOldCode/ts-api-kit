@@ -2,7 +2,7 @@ import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
-import { port } from '../server.js';
+import { port } from '../server';
 
 const getHost = (publicUrl: string) => {
   if (['local', 'test'].includes(process.env.NODE_ENV as string)) return '127.0.0.1';

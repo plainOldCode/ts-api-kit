@@ -1,6 +1,6 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
-import AppDataSource from '../data-source/index.js';
+import AppDataSource from '../data-source/index';
 
 export const db = fp(async (server: FastifyInstance) => {
   try {

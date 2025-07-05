@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { User } from '../../entity/user.js';
+import { User } from '../../entity/user';
 
 const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get(

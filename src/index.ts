@@ -1,4 +1,4 @@
-import { build, localIP, port } from './server.js';
+import { build, localIP, port } from './server';
 
 const start = async () => {
   let server = null;

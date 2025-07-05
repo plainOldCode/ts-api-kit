@@ -1,7 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions, FastifyPluginAsync } from 'fastify';
 import fp from 'fastify-plugin';
-import ping from './ping.js';
-import users from './users.js';
+import ping from './ping';
+import users from './users';
 
 const IndexRoute: FastifyPluginAsync = async (
   server: FastifyInstance,

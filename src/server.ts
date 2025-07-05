@@ -1,4 +1,4 @@
-import { db } from './db-connection/index.js';
+import { db } from './db-connection/index';
 import { DataSource } from 'typeorm';
 import {
   FastifyLoggerInstance,
@@ -25,8 +25,8 @@ declare module 'fastify' {
 import { fastify } from 'fastify';
 import fastifyCors from '@fastify/cors';
 import pino from 'pino';
-import { swagger } from './swagger/index.js';
-import apiv0 from './api/v0/index.js';
+import { swagger } from './swagger/index';
+import apiv0 from './api/v0/index';
 
 export const build = () => {
   const server = fastify({

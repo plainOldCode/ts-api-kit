@@ -2,7 +2,6 @@
   "name": "fastify-typescript-starter",
   "version": "1.0.0",
   "description": "A TypeScript starter template for Fastify with TypeORM",
-  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "jest --passWithNoTests",
