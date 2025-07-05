@@ -5,12 +5,12 @@ A modern TypeScript starter template for building APIs with Fastify and TypeORM,
 ## Features
 
 - **Fastify** - Fast and low overhead web framework
-- **TypeScript** - Type safety and modern JavaScript features, compiled to CommonJS
+- **TypeScript** - Type safety and modern JavaScript features, compiled to ES Modules
 - **TypeORM** - Data-mapper ORM for TypeScript and JavaScript
 - **MySQL** - Reliable and performant database
 - **Swagger** - API documentation with OpenAPI 3.0
 - **ESLint & Prettier** - Code formatting and linting
-- **Jest** - Testing framework with TypeScript support
+- **Jest** - Testing framework with TypeScript support (configured via `jest.config.cjs`)
 - **CommonJS** - Standard Node.js module system for maximum compatibility
 
 ## Getting Started
@@ -105,11 +105,11 @@ Once the server is running, you can access the Swagger documentation at:
 
 ### Module System
 
-This project uses **CommonJS** as the target module system:
+This project uses **ES Modules (ESM)** as the target module system:
 
 - TypeScript source files use standard ES6 import/export syntax
-- All imports use relative paths without file extensions (e.g., `import { User } from './entity/user'`)
-- TypeScript compiles to CommonJS with `require()` and `module.exports`
+- All relative imports **do not** need to include the `.js` extension due to `tsconfig-paths` configuration (e.g., `import { User } from './entity/user'`)
+- TypeScript compiles to ES Modules
 - No module aliases or path mapping - all imports are explicit relative paths
 
 ### Project Structure
@@ -139,7 +139,7 @@ src/
 
 ### Build Output
 
-The `build/` directory contains the compiled CommonJS JavaScript files that are executed in production.
+The `build/` directory contains the compiled ES Module JavaScript files that are executed in production.
 
 ## Contributing
 

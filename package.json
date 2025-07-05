@@ -2,6 +2,7 @@
   "name": "fastify-typescript-starter",
   "version": "1.0.0",
   "description": "A TypeScript starter template for Fastify with TypeORM",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "jest --passWithNoTests",
@@ -10,7 +11,7 @@
     "build:watch": "tsc -w",
     "clean": "rimraf ./build",
     "dev": "nodemon build/index.js",
-    "start": "node build/index.js",
+    "start": "node -r tsconfig-paths/register build/index.js",
     "lint": "eslint .",
     "ci:test": "NODE_ENV=test npm-run-all build migrate:init-test migrate:run-test test",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js",
@@ -50,6 +51,7 @@
     "nodemon": "^3.1.10",
     "pino": "^7.11.0",
     "reflect-metadata": "^0.1.13",
+    "tsconfig-paths": "^4.2.0",
     "typeorm": "^0.3.25"
   },
   "devDependencies": {
