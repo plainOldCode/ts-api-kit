@@ -11,8 +11,8 @@ const getConnectionOptions = () => {
     database: process.env.NODE_ENV === 'test' ? 'test_db' : process.env.DB_NAME || 'starter_db',
     synchronize: false,
     logging: false,
-    entities: [__dirname + '/../entity/*.js'],
-    migrations: [__dirname + '/../migration/*.js'],
+    entities: ['build/entity/*.js'],
+    migrations: ['build/migration/*.js'],
   };
   return connectionOptions;
 };

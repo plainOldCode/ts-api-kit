@@ -1,4 +1,4 @@
-import { db } from './db-connection';
+import { db } from './db-connection/index.js';
 import { DataSource } from 'typeorm';
 import {
   FastifyLoggerInstance,
@@ -12,9 +12,10 @@ import {
 declare module 'fastify' {
   export interface FastifyInstance<
     RawServer extends RawServerBase = RawServerDefault,
-    RawRequest extends RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
+    RawRequest extends
+      RawRequestDefaultExpression<RawServer> = RawRequestDefaultExpression<RawServer>,
     RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
-    Logger = FastifyLoggerInstance
+    Logger = FastifyLoggerInstance,
   > {
     db: DataSource;
   }
@@ -24,8 +25,8 @@ declare module 'fastify' {
 import { fastify } from 'fastify';
 import fastifyCors from '@fastify/cors';
 import pino from 'pino';
-import { swagger } from './swagger';
-import apiv0 from './api/v0';
+import { swagger } from './swagger/index.js';
+import apiv0 from './api/v0/index.js';
 
 export const build = () => {
   const server = fastify({
@@ -40,21 +41,19 @@ export const build = () => {
     preflightContinue: false,
     optionsSuccessStatus: 204,
   });
-  
+
   server.register(db);
   server.register(swagger);
   server.register(apiv0, { prefix: '/api/v0' });
-  
+
   server.get('/', async function (request, reply) {
-    try {
-      return reply.code(200).send('Fastify TypeScript Starter API');
-    } catch (error) {
-      return reply.send(500);
-    }
+    return reply.code(200).send('Fastify TypeScript Starter API');
   });
-  
+
   return server;
 };
 
-export const localIP = ['local', 'test'].includes(process.env.NODE_ENV as string) ? '127.0.0.1' : '0.0.0.0';
+export const localIP = ['local', 'test'].includes(process.env.NODE_ENV as string)
+  ? '127.0.0.1'
+  : '0.0.0.0';
 export const port = process.env.PORT || 3000;

@@ -24,23 +24,27 @@ A modern TypeScript starter template for building APIs with Fastify and TypeORM.
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/your-username/fastify-typescript-starter.git
 cd fastify-typescript-starter
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env
 # Edit .env with your database configuration
 ```
 
 4. Set up the database:
+
 ```bash
 # Create database
 mysql -u root -p -e "CREATE DATABASE starter_db;"
@@ -50,12 +54,14 @@ npm run migrate:run
 ```
 
 5. Build and start the server:
+
 ```bash
 npm run build
 npm start
 ```
 
 For development:
+
 ```bash
 npm run build:watch
 # In another terminal
@@ -65,6 +71,7 @@ npm run dev
 ## API Documentation
 
 Once the server is running, you can access the Swagger documentation at:
+
 - Local: http://localhost:3000/documentation
 
 ## Available Scripts
@@ -79,15 +86,15 @@ Once the server is running, you can access the Swagger documentation at:
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `NODE_ENV` | Environment (local, test, production) | - |
-| `PORT` | Server port | 3000 |
-| `DB_HOST` | Database host | 127.0.0.1 |
-| `DB_PORT` | Database port | 3306 |
-| `DB_USERNAME` | Database username | root |
-| `DB_PASSWORD` | Database password | password |
-| `DB_NAME` | Database name | starter_db |
+| Variable      | Description                           | Default    |
+| ------------- | ------------------------------------- | ---------- |
+| `NODE_ENV`    | Environment (local, test, production) | -          |
+| `PORT`        | Server port                           | 3000       |
+| `DB_HOST`     | Database host                         | 127.0.0.1  |
+| `DB_PORT`     | Database port                         | 3306       |
+| `DB_USERNAME` | Database username                     | root       |
+| `DB_PASSWORD` | Database password                     | password   |
+| `DB_NAME`     | Database name                         | starter_db |
 
 ## Project Structure
 

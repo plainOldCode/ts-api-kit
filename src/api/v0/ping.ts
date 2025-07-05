@@ -1,26 +1,30 @@
-import { FastifyInstance, FastifyPluginAsync, FastifyPluginOptions } from 'fastify';
+import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 
-const ping: FastifyPluginAsync = async (server: FastifyInstance, options: FastifyPluginOptions) => {
-  server.get('/ping', {
-    schema: {
-      tags: ['Health'],
-      description: 'Health check endpoint',
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            message: { type: 'string' },
-            timestamp: { type: 'string' },
+const ping: FastifyPluginAsync = async (server: FastifyInstance) => {
+  server.get(
+    '/ping',
+    {
+      schema: {
+        tags: ['Health'],
+        description: 'Health check endpoint',
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+              timestamp: { type: 'string' },
+            },
           },
         },
       },
     },
-  }, async (request, reply) => {
-    return reply.code(200).send({
-      message: 'pong',
-      timestamp: new Date().toISOString(),
-    });
-  });
+    async (request, reply) => {
+      return reply.code(200).send({
+        message: 'pong',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  );
 };
 
 export default ping;
