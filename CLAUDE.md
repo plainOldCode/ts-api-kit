@@ -5,9 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Core Project Configuration
 
 - **Node.js Version**: `>=24.0.0`
-- **Module System**: **CommonJS**. The project compiles TypeScript to CommonJS modules.
+- **Module System**: **ES Modules (ESM)**. All TypeScript import/export statements should use ESM syntax. Relative import paths **do not** need to include the `.js` extension due to `tsconfig-paths` configuration.
 - **Import Paths**: Use relative imports without `.js` extensions (e.g., `import { User } from './entity/user'`)
-- **Linter**: ESLint with Prettier, configured in `eslint.config.js` using CommonJS syntax
+- **Linter**: ESLint with Prettier, configured in `eslint.config.js` using ESM syntax
+- **Database**: Requires MySQL version 8.x or higher
 
 ## Common Commands
 
@@ -53,7 +54,7 @@ This is a Fastify-based TypeScript API with TypeORM for database operations:
 
 The project uses standard TypeScript imports with relative paths:
 - Use relative imports without file extensions: `import { User } from './entity/user'`
-- TypeScript compiler handles path resolution and compiles to CommonJS
+- TypeScript compiler handles path resolution and compiles to ES Modules
 - No module aliases are used - all imports are explicit relative paths
 
 #### Database Integration
@@ -82,7 +83,7 @@ The application uses environment variables for configuration:
 
 1. Clean previous build (`npm run clean`)
 2. Lint code (`npm run lint`)
-3. Compile TypeScript to CommonJS (`tsc`)
+3. Compile TypeScript to ES Modules (`tsc`)
 4. Run from `build/` directory
 
-The project compiles to CommonJS modules with standard `require()` and `module.exports` syntax.
+The project compiles to ES Modules with standard `import` and `export` syntax.
