@@ -1,6 +1,6 @@
 # Fastify TypeScript Starter
 
-A modern TypeScript starter template for building APIs with Fastify and TypeORM, compiled to CommonJS.
+A modern TypeScript starter template for building APIs with Fastify and TypeORM, compiled to ES Modules.
 
 ## Features
 
@@ -11,7 +11,7 @@ A modern TypeScript starter template for building APIs with Fastify and TypeORM,
 - **Swagger** - API documentation with OpenAPI 3.0
 - **ESLint & Prettier** - Code formatting and linting
 - **Jest** - Testing framework with TypeScript support (configured via `jest.config.cjs`)
-- **CommonJS** - Standard Node.js module system for maximum compatibility
+- **ES Modules** - Modern module system for Node.js with native ESM support
 
 ## Getting Started
 
@@ -77,7 +77,7 @@ Once the server is running, you can access the Swagger documentation at:
 
 ## Available Scripts
 
-- `npm run build` - Compile TypeScript to CommonJS in `build/` directory
+- `npm run build` - Compile TypeScript to ES Modules in `build/` directory
 - `npm run build:watch` - Compile TypeScript in watch mode for development
 - `npm run dev` - Start development server with nodemon (requires build first)
 - `npm start` - Start production server from compiled code
