@@ -18,7 +18,7 @@ A modern TypeScript starter template for building APIs with Fastify and TypeORM,
 ### Prerequisites
 
 - Node.js (>= 24.0.0)
-- MySQL (>= 5.7)
+- MySQL (>= 8.x)
 - npm
 
 ### Installation

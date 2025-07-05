@@ -7,6 +7,7 @@ This file provides guidance to Gemini when working with code in this repository.
 - **Node.js Version**: `>=24.0.0`
 - **Module System**: **CommonJS**. All TypeScript import/export statements should use CommonJS syntax (e.g., `require()` and `module.exports`). Do **not** include `.js` extensions in relative import paths.
 - **Linter**: ESLint with Prettier. The configuration is in `eslint.config.js` and uses CommonJS syntax.
+- **Database**: Requires MySQL version 8.x or higher.
 
 ## Common Commands
 
