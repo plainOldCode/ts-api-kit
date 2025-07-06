@@ -44,13 +44,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Core Structure
 
-This is a Fastify-based TypeScript API with Prisma ORM for database operations:
+This is a Fastify-based TypeScript API with Prisma ORM and modern service layer architecture:
 
 - **Entry Point**: `src/index.ts` - Application bootstrap
 - **Server Setup**: `src/server.ts` - Fastify server configuration with plugins
 - **Database**: Prisma ORM with MySQL, schema defined in `prisma/schema.prisma`
-- **API Routes**: Organized under `src/api/v0/` with versioned endpoints
-- **Database Models**: Prisma models with type-safe client generation
+- **API Routes**: Organized under `src/api/v0/` with versioned endpoints (thin layer)
+- **Service Layer**: Business logic in `src/services/` with dependency injection
+- **Error Handling**: Custom error classes and centralized error handling
+- **Type Safety**: Comprehensive TypeScript interfaces and DTOs
 
 ### Key Patterns
 
@@ -61,19 +63,30 @@ The project uses standard TypeScript imports with relative paths:
 - TypeScript compiler handles path resolution and compiles to ES Modules
 - No module aliases are used - all imports are explicit relative paths
 
+#### Service Layer Architecture
+
+- **Separation of Concerns**: API routes handle HTTP, services handle business logic
+- **Dependency Injection**: Services are registered via `src/services-plugin/index.ts`
+- **Error Handling**: Custom error classes with proper HTTP status codes
+- **Type Safety**: DTOs and interfaces for request/response validation
+- **Service Registry**: Centralized service management in `src/services/service-registry.ts`
+
 #### Database Integration
 
 - PrismaClient is initialized in `src/db-connection/index.ts` as a Fastify plugin
 - Database connection is decorated onto the Fastify instance as `server.db`
+- Services access the database through dependency injection
 - Models are defined in `prisma/schema.prisma` with automatic type generation
 - Prisma configuration supports environment-specific databases (test vs local)
 
 #### API Structure
 
-- Routes are organized by version (`/api/v0/`)
+- Routes are organized by version (`/api/v0/`) as thin HTTP layers
 - Each route file exports a Fastify plugin
-- Main API index registers all route plugins
+- Routes delegate business logic to service layer
+- Centralized error handling via plugin
 - Swagger documentation is auto-generated and available at `/documentation`
+- Comprehensive request/response schemas with validation
 
 ### Environment Configuration
 
@@ -92,3 +105,28 @@ The application uses environment variables for configuration:
 5. Run from `build/` directory
 
 The project compiles to ES Modules with standard `import` and `export` syntax. Prisma Client generation is included in the prebuild step to ensure type-safe database access.
+
+## Directory Structure
+
+```
+src/
+├── api/v0/              # HTTP route handlers (thin layer)
+├── services/            # Business logic layer
+│   ├── user.service.ts  # User-related business operations
+│   └── service-registry.ts # Service dependency injection
+├── services-plugin/     # Fastify plugin for service injection
+├── types/               # TypeScript interfaces and DTOs
+│   ├── user.types.ts    # User-related type definitions
+│   └── common.types.ts  # Shared type definitions
+├── errors/              # Custom error classes
+│   ├── base.error.ts    # Base error class
+│   └── user.errors.ts   # User-specific errors
+├── plugins/             # Fastify plugins
+│   └── error-handler.ts # Centralized error handling
+├── db-connection/       # Database connection setup
+└── swagger/             # API documentation setup
+
+prisma/
+├── schema.prisma        # Database schema definition
+└── migrations/          # Database migration files
+```
