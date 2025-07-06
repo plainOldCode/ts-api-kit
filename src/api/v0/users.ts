@@ -1,5 +1,4 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { User } from '../../entity/user';
 
 const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get(
@@ -29,9 +28,16 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
     },
     async (request, reply) => {
       try {
-        const userRepository = server.db.getRepository(User);
-        const users = await userRepository.find({
-          select: ['id', 'email', 'firstName', 'lastName', 'state', 'created_at', 'updated_at'],
+        const users = await server.db.user.findMany({
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            state: true,
+            created_at: true,
+            updated_at: true,
+          },
         });
         return reply.code(200).send(users);
       } catch (error) {
@@ -79,10 +85,17 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
     async (request, reply) => {
       try {
         const { id } = request.params as { id: number };
-        const userRepository = server.db.getRepository(User);
-        const user = await userRepository.findOne({
+        const user = await server.db.user.findUnique({
           where: { id },
-          select: ['id', 'email', 'firstName', 'lastName', 'state', 'created_at', 'updated_at'],
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            state: true,
+            created_at: true,
+            updated_at: true,
+          },
         });
 
         if (!user) {

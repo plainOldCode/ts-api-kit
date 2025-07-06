@@ -1,13 +1,14 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance } from 'fastify';
-import AppDataSource from '../data-source/index';
+import { PrismaClient } from '@prisma/client';
 
 export const db = fp(async (server: FastifyInstance) => {
   try {
-    const dataSource = await AppDataSource.initialize();
-    server.decorate('db', dataSource);
+    const prisma = new PrismaClient();
+    await prisma.$connect();
+    server.decorate('db', prisma);
     server.addHook('onClose', async () => {
-      await dataSource.destroy();
+      await prisma.$disconnect();
     });
   } catch (error) {
     server.log.error(error);

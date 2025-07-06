@@ -1,5 +1,5 @@
 import { db } from './db-connection/index';
-import { DataSource } from 'typeorm';
+import { PrismaClient } from '@prisma/client';
 import {
   FastifyLoggerInstance,
   RawReplyDefaultExpression,
@@ -17,7 +17,7 @@ declare module 'fastify' {
     RawReply extends RawReplyDefaultExpression<RawServer> = RawReplyDefaultExpression<RawServer>,
     Logger = FastifyLoggerInstance,
   > {
-    db: DataSource;
+    db: PrismaClient;
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
