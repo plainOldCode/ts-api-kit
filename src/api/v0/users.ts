@@ -1,54 +1,12 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { UserQueryOptions } from '../../types';
+import { userSchemas } from '../../schemas';
 
 const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get(
     '/users',
     {
-      schema: {
-        tags: ['Users'],
-        description: 'Get all users with pagination and filtering',
-        querystring: {
-          type: 'object',
-          properties: {
-            page: { type: 'number', minimum: 1, default: 1 },
-            limit: { type: 'number', minimum: 1, maximum: 100, default: 10 },
-            state: { type: 'string', enum: ['ACTIVE', 'INACTIVE', 'PENDING', 'DELETED'] },
-            search: { type: 'string' },
-          },
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              data: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    id: { type: 'number' },
-                    email: { type: 'string' },
-                    firstName: { type: 'string' },
-                    lastName: { type: 'string' },
-                    state: { type: 'string' },
-                    created_at: { type: 'string' },
-                    updated_at: { type: 'string' },
-                  },
-                },
-              },
-              pagination: {
-                type: 'object',
-                properties: {
-                  page: { type: 'number' },
-                  limit: { type: 'number' },
-                  total: { type: 'number' },
-                  totalPages: { type: 'number' },
-                },
-              },
-            },
-          },
-        },
-      },
+      schema: userSchemas.getUsers,
     },
     async (request, reply) => {
       const queryOptions = request.query as UserQueryOptions;
@@ -60,37 +18,7 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get(
     '/users/:id',
     {
-      schema: {
-        tags: ['Users'],
-        description: 'Get user by ID',
-        params: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-          },
-          required: ['id'],
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              id: { type: 'number' },
-              email: { type: 'string' },
-              firstName: { type: 'string' },
-              lastName: { type: 'string' },
-              state: { type: 'string' },
-              created_at: { type: 'string' },
-              updated_at: { type: 'string' },
-            },
-          },
-          404: {
-            type: 'object',
-            properties: {
-              error: { type: 'string' },
-            },
-          },
-        },
-      },
+      schema: userSchemas.getUserById,
     },
     async (request, reply) => {
       const { id } = request.params as { id: number };
@@ -106,42 +34,7 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.post(
     '/users',
     {
-      schema: {
-        tags: ['Users'],
-        description: 'Create a new user',
-        body: {
-          type: 'object',
-          required: ['name', 'email', 'password'],
-          properties: {
-            name: { type: 'string' },
-            email: { type: 'string', format: 'email' },
-            password: { type: 'string', minLength: 6 },
-            firstName: { type: 'string' },
-            lastName: { type: 'string' },
-            description: { type: 'string' },
-          },
-        },
-        response: {
-          201: {
-            type: 'object',
-            properties: {
-              data: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  email: { type: 'string' },
-                  firstName: { type: 'string' },
-                  lastName: { type: 'string' },
-                  state: { type: 'string' },
-                  created_at: { type: 'string' },
-                  updated_at: { type: 'string' },
-                },
-              },
-              success: { type: 'boolean' },
-            },
-          },
-        },
-      },
+      schema: userSchemas.createUser,
     },
     async (request, reply) => {
       const userData = request.body as any;
@@ -157,48 +50,7 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.put(
     '/users/:id',
     {
-      schema: {
-        tags: ['Users'],
-        description: 'Update a user',
-        params: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-          },
-          required: ['id'],
-        },
-        body: {
-          type: 'object',
-          properties: {
-            name: { type: 'string' },
-            email: { type: 'string', format: 'email' },
-            firstName: { type: 'string' },
-            lastName: { type: 'string' },
-            description: { type: 'string' },
-            state: { type: 'string', enum: ['ACTIVE', 'INACTIVE', 'PENDING', 'DELETED'] },
-          },
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              data: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number' },
-                  email: { type: 'string' },
-                  firstName: { type: 'string' },
-                  lastName: { type: 'string' },
-                  state: { type: 'string' },
-                  created_at: { type: 'string' },
-                  updated_at: { type: 'string' },
-                },
-              },
-              success: { type: 'boolean' },
-            },
-          },
-        },
-      },
+      schema: userSchemas.updateUser,
     },
     async (request, reply) => {
       const { id } = request.params as { id: number };
@@ -215,26 +67,7 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.delete(
     '/users/:id',
     {
-      schema: {
-        tags: ['Users'],
-        description: 'Delete a user',
-        params: {
-          type: 'object',
-          properties: {
-            id: { type: 'number' },
-          },
-          required: ['id'],
-        },
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              message: { type: 'string' },
-              success: { type: 'boolean' },
-            },
-          },
-        },
-      },
+      schema: userSchemas.deleteUser,
     },
     async (request, reply) => {
       const { id } = request.params as { id: number };

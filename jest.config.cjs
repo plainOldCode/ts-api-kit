@@ -1,14 +1,10 @@
-/* eslint-disable no-useless-escape */
+ 
 module.exports = {
-  preset: 'ts-jest',
   testEnvironment: 'node',
-  roots: ['<rootDir>/src'],
-  testMatch: ['**/__tests__/**/*.ts', '**/?(*.)+(spec|test).ts'],
-  transform: {
-    '^.+\.ts$': 'ts-jest',
-  },
+  roots: ['<rootDir>/build'],
+  testMatch: ['**/__tests__/**/*.js', '**/?(*.)+(spec|test).js'],
+  collectCoverageFrom: ['build/**/*.js', '!build/**/*.d.ts'],
   moduleNameMapper: {
-    '^(\.{1,2}/.*)\.js$': '$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1'
   },
-  collectCoverageFrom: ['src/**/*.ts', '!src/**/*.d.ts', '!src/migration/**'],
 };

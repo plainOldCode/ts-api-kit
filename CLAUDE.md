@@ -21,8 +21,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Testing
 
-- `npm test` - Run Jest tests directly on TypeScript source files
+- `npm test` - Build project and run all tests on compiled JavaScript
+- `npm run test:unit` - Build and run only service layer unit tests
+- `npm run test:api` - Build and run only API integration tests
+- `npm run test:watch` - Build and run tests in watch mode for development
+- `npm run test:coverage` - Build and run tests with coverage reporting
 - `npm run ci:test` - Full CI test pipeline (build, migrate test DB, run tests)
+
+**Note**: All tests run against the compiled JavaScript in the `build/` directory following the TypeScript workflow: lint → build → test.
 
 ### Database Management
 
@@ -71,6 +77,24 @@ The project uses standard TypeScript imports with relative paths:
 - **Type Safety**: DTOs and interfaces for request/response validation
 - **Service Registry**: Centralized service management in `src/services/service-registry.ts`
 
+#### Schema Layer Architecture
+
+- **Schema Separation**: API validation schemas are extracted from route handlers
+- **Reusable Components**: Common schema patterns in `src/schemas/common.schemas.ts`
+- **Endpoint-Specific Schemas**: Each API module has dedicated schema files
+- **Clean Routes**: Route handlers focus on business logic, not validation structure
+- **Centralized Validation**: All request/response validation rules in one place
+
+#### Testing Architecture
+
+- **TypeScript Testing Workflow**: Tests run on compiled JavaScript following lint → build → test
+- **Unit Tests**: Service layer tested in isolation with mocked dependencies
+- **API Tests**: Integration tests for HTTP endpoints using real Fastify instances
+- **Test Utilities**: Shared mocking utilities and test data factories in `src/test-utils/`
+- **Mocked Dependencies**: Prisma client mocked using `jest-mock-extended`
+- **Comprehensive Coverage**: All service methods tested with error scenarios
+- **Compiled Testing**: Jest runs against `build/` directory, not TypeScript source
+
 #### Database Integration
 
 - PrismaClient is initialized in `src/db-connection/index.ts` as a Fastify plugin
@@ -113,8 +137,19 @@ src/
 ├── api/v0/              # HTTP route handlers (thin layer)
 ├── services/            # Business logic layer
 │   ├── user.service.ts  # User-related business operations
-│   └── service-registry.ts # Service dependency injection
+│   ├── user.service.spec.ts # User service unit tests
+│   ├── service-registry.ts # Service dependency injection
+│   └── service-registry.spec.ts # Service registry unit tests
 ├── services-plugin/     # Fastify plugin for service injection
+├── schemas/             # API validation schemas
+│   ├── common.schemas.ts # Shared schema components
+│   ├── ping.schemas.ts  # Ping endpoint schemas
+│   ├── users.schemas.ts # User endpoint schemas
+│   └── index.ts         # Schema exports
+├── test-utils/          # Testing utilities and mocks
+│   ├── prisma-mock.ts   # Prisma client mocking utilities
+│   ├── test-data.ts     # Test data factories and scenarios
+│   └── index.ts         # Test utilities exports
 ├── types/               # TypeScript interfaces and DTOs
 │   ├── user.types.ts    # User-related type definitions
 │   └── common.types.ts  # Shared type definitions
