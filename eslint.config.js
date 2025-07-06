@@ -84,7 +84,7 @@ export default [
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
       '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off', // Allow 'any' in test files for mocking
       '@typescript-eslint/no-require-imports': 'off',
     },
   },
