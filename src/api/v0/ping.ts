@@ -1,22 +1,11 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import { pingSchemas } from '../../schemas';
 
 const ping: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get(
     '/ping',
     {
-      schema: {
-        tags: ['Health'],
-        description: 'Health check endpoint',
-        response: {
-          200: {
-            type: 'object',
-            properties: {
-              message: { type: 'string' },
-              timestamp: { type: 'string' },
-            },
-          },
-        },
-      },
+      schema: pingSchemas.ping,
     },
     async (request, reply) => {
       return reply.code(200).send({
