@@ -224,10 +224,25 @@ throw new UserAlreadyExistsError(`Email already in use`);     // 409
 
 ### Type Safety
 
-- **DTOs**: Data Transfer Objects for API contracts
+The codebase enforces strict TypeScript patterns with **zero** `@typescript-eslint/no-explicit-any` warnings:
+
+- **DTOs**: Data Transfer Objects for API contracts (`CreateUserDto`, `UpdateUserDto`)
 - **Interfaces**: Clear contracts between layers
 - **Prisma Types**: Auto-generated database types
 - **Service Types**: Business logic type definitions
+- **Mock Helpers**: Type-safe testing utilities (`asMockUser`, `asMockUserArray`)
+- **Error Handling**: Proper `unknown` types instead of `any`
+
+```typescript
+// Type-safe API handlers
+const userData = request.body as CreateUserDto;
+
+// Type-safe mock testing
+prismaMock.user.findMany.mockResolvedValue(asMockUserArray(users));
+
+// Proper error type casting
+const prismaError = error as unknown as { code: string; meta?: unknown };
+```
 
 ## 🧪 Testing
 
