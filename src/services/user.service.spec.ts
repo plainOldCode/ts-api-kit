@@ -70,7 +70,7 @@ describe('UserService', () => {
       const mockUsers = createMockPrismaUserList(2);
       const options = { page: 2, limit: 5, state: DataState.ACTIVE, search: 'john' };
 
-      prismaMock.user.findMany.mockResolvedValue(mockUsers.map(prismaUserToDto) as any);
+      prismaMock.user.findMany.mockResolvedValue(mockUsers);
       prismaMock.user.count.mockResolvedValue(12);
 
       // Act
@@ -113,7 +113,7 @@ describe('UserService', () => {
       const mockUsers = createMockPrismaUserList(1);
       const options = { state: DataState.INACTIVE };
 
-      prismaMock.user.findMany.mockResolvedValue(mockUsers.map(prismaUserToDto) as any);
+      prismaMock.user.findMany.mockResolvedValue(mockUsers);
       prismaMock.user.count.mockResolvedValue(1);
 
       // Act
@@ -132,13 +132,14 @@ describe('UserService', () => {
     it('should return user when found', async () => {
       // Arrange
       const mockUser = createMockPrismaUser();
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(mockUser) as any);
+      const userDto = prismaUserToDto(mockUser);
+      prismaMock.user.findUnique.mockResolvedValue(userDto as any);
 
       // Act
       const result = await userService.getUserById(1);
 
       // Assert
-      expect(result).toEqual(prismaUserToDto(mockUser));
+      expect(result).toEqual(userDto);
       expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
         where: { id: 1 },
         select: {
@@ -167,13 +168,14 @@ describe('UserService', () => {
     it('should return user when found', async () => {
       // Arrange
       const mockUser = createMockPrismaUser();
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(mockUser) as any);
+      const userDto = prismaUserToDto(mockUser);
+      prismaMock.user.findUnique.mockResolvedValue(userDto as any);
 
       // Act
       const result = await userService.getUserByEmail('test@example.com');
 
       // Assert
-      expect(result).toEqual(prismaUserToDto(mockUser));
+      expect(result).toEqual(userDto);
       expect(prismaMock.user.findUnique).toHaveBeenCalledWith({
         where: { email: 'test@example.com' },
         select: {
@@ -264,16 +266,18 @@ describe('UserService', () => {
       const updateData = createMockUpdateUserDto();
       const existingUser = createMockPrismaUser();
       const updatedUser = createMockPrismaUser({ ...updateData });
+      const existingUserDto = prismaUserToDto(existingUser);
+      const updatedUserDto = prismaUserToDto(updatedUser);
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // getUserById check
+      prismaMock.user.findUnique.mockResolvedValueOnce(existingUserDto as any); // getUserById check
       prismaMock.user.findUnique.mockResolvedValueOnce(null); // Email availability check
-      prismaMock.user.update.mockResolvedValue(prismaUserToDto(updatedUser) as any);
+      prismaMock.user.update.mockResolvedValue(updatedUserDto as any);
 
       // Act
       const result = await userService.updateUser(userId, updateData);
 
       // Assert
-      expect(result).toEqual(prismaUserToDto(updatedUser));
+      expect(result).toEqual(updatedUserDto);
       expect(prismaMock.user.update).toHaveBeenCalledWith({
         where: { id: userId },
         data: updateData,
@@ -308,7 +312,7 @@ describe('UserService', () => {
       const emailOwner = createMockPrismaUser({ id: 2, email: 'taken@example.com' });
 
       prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // getUserById check
-      prismaMock.user.findUnique.mockResolvedValueOnce(emailOwner); // Email availability check
+      prismaMock.user.findUnique.mockResolvedValueOnce(emailOwner as any); // Email availability check
 
       // Act & Assert
       await expect(userService.updateUser(userId, updateData)).rejects.toThrow(
@@ -322,16 +326,18 @@ describe('UserService', () => {
       const updateData = createMockUpdateUserDto({ email: 'test@example.com' });
       const existingUser = createMockPrismaUser({ id: 1, email: 'test@example.com' });
       const updatedUser = createMockPrismaUser({ ...updateData });
+      const existingUserDto = prismaUserToDto(existingUser);
+      const updatedUserDto = prismaUserToDto(updatedUser);
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // getUserById check
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // Email availability check (same user)
-      prismaMock.user.update.mockResolvedValue(prismaUserToDto(updatedUser) as any);
+      prismaMock.user.findUnique.mockResolvedValueOnce(existingUserDto as any); // getUserById check
+      prismaMock.user.findUnique.mockResolvedValueOnce(existingUserDto as any); // Email availability check (same user)
+      prismaMock.user.update.mockResolvedValue(updatedUserDto as any);
 
       // Act
       const result = await userService.updateUser(userId, updateData);
 
       // Assert
-      expect(result).toEqual(prismaUserToDto(updatedUser));
+      expect(result).toEqual(updatedUserDto);
     });
 
     it('should throw UserUpdateError when update fails', async () => {
@@ -339,8 +345,9 @@ describe('UserService', () => {
       const userId = 1;
       const updateData = createMockUpdateUserDto();
       const existingUser = createMockPrismaUser();
+      const existingUserDto = prismaUserToDto(existingUser);
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValueOnce(existingUserDto as any);
       prismaMock.user.findUnique.mockResolvedValueOnce(null);
       prismaMock.user.update.mockRejectedValue(new Error('Database error'));
 
@@ -354,9 +361,10 @@ describe('UserService', () => {
       // Arrange
       const userId = 1;
       const existingUser = createMockPrismaUser();
+      const existingUserDto = prismaUserToDto(existingUser);
 
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(existingUser) as any);
-      prismaMock.user.delete.mockResolvedValue(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValue(existingUserDto as any);
+      prismaMock.user.delete.mockResolvedValue(existingUserDto as any);
 
       // Act
       await userService.deleteUser(userId);
@@ -396,16 +404,18 @@ describe('UserService', () => {
       const userId = 1;
       const existingUser = createMockPrismaUser();
       const deletedUser = createMockPrismaUser({ state: DataState.DELETED });
+      const existingUserDto = prismaUserToDto(existingUser);
+      const deletedUserDto = prismaUserToDto(deletedUser);
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValueOnce(existingUserDto as any);
       prismaMock.user.findUnique.mockResolvedValueOnce(null);
-      prismaMock.user.update.mockResolvedValue(prismaUserToDto(deletedUser) as any);
+      prismaMock.user.update.mockResolvedValue(deletedUserDto as any);
 
       // Act
       const result = await userService.softDeleteUser(userId);
 
       // Assert
-      expect(result).toEqual(prismaUserToDto(deletedUser));
+      expect(result).toEqual(deletedUserDto);
       expect(prismaMock.user.update).toHaveBeenCalledWith({
         where: { id: userId },
         data: { state: DataState.DELETED },
@@ -427,14 +437,15 @@ describe('UserService', () => {
       // Arrange
       const mockUsers = createMockPrismaUserList(2);
       const state = DataState.ACTIVE;
+      const selectedUsers = mockUsers.map(prismaUserToDto);
 
-      prismaMock.user.findMany.mockResolvedValue(mockUsers.map(prismaUserToDto) as any);
+      prismaMock.user.findMany.mockResolvedValue(selectedUsers as any);
 
       // Act
       const result = await userService.getUsersByState(state);
 
       // Assert
-      expect(result).toEqual(mockUsers.map(prismaUserToDto));
+      expect(result).toEqual(selectedUsers);
       expect(prismaMock.user.findMany).toHaveBeenCalledWith({
         where: { state },
         select: {

@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin';
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { BaseError } from '../errors';
+import { Prisma } from '@prisma/client';
 
 interface ErrorResponse {
   success: boolean;
@@ -8,7 +9,7 @@ interface ErrorResponse {
   statusCode: number;
   timestamp: string;
   path: string;
-  details?: any;
+  details?: unknown;
 }
 
 export const errorHandler = fp(async (server: FastifyInstance) => {
@@ -41,8 +42,8 @@ export const errorHandler = fp(async (server: FastifyInstance) => {
     }
 
     // Handle Prisma errors
-    if (error.name === 'PrismaClientKnownRequestError') {
-      const prismaError = error as any;
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      const prismaError = error;
       let statusCode = 400;
       let message = 'Database error occurred';
 

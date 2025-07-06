@@ -1,8 +1,8 @@
-import { DataState } from '@prisma/client';
+import { DataState, User } from '@prisma/client';
 import { UserDto, CreateUserDto, UpdateUserDto } from '../types';
 
 // Test data factories for Prisma User model (includes all fields)
-export const createMockPrismaUser = (overrides: any = {}) => ({
+export const createMockPrismaUser = (overrides: Partial<User> = {}) => ({
   id: 1,
   name: 'John Doe',
   email: 'test@example.com',
@@ -17,7 +17,7 @@ export const createMockPrismaUser = (overrides: any = {}) => ({
 });
 
 // Helper to convert Prisma user to UserDto format (what the service returns)
-export const prismaUserToDto = (prismaUser: any): UserDto => ({
+export const prismaUserToDto = (prismaUser: User): UserDto => ({
   id: prismaUser.id,
   email: prismaUser.email,
   firstName: prismaUser.firstName,
