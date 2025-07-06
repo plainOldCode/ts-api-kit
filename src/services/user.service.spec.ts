@@ -8,6 +8,8 @@ import {
   createMockCreateUserDto,
   createMockUpdateUserDto,
   prismaUserToDto,
+  asMockUserArray,
+  asMockUser,
 } from '../test-utils';
 import {
   UserNotFoundError,
@@ -32,7 +34,7 @@ describe('UserService', () => {
       const selectedUsers = mockPrismaUsers.map(prismaUserToDto); // What Prisma returns with select
       const totalCount = 25;
 
-      prismaMock.user.findMany.mockResolvedValue(selectedUsers as any);
+      prismaMock.user.findMany.mockResolvedValue(asMockUserArray(selectedUsers));
       prismaMock.user.count.mockResolvedValue(totalCount);
 
       // Act
@@ -70,7 +72,7 @@ describe('UserService', () => {
       const mockUsers = createMockPrismaUserList(2);
       const options = { page: 2, limit: 5, state: DataState.ACTIVE, search: 'john' };
 
-      prismaMock.user.findMany.mockResolvedValue(mockUsers.map(prismaUserToDto) as any);
+      prismaMock.user.findMany.mockResolvedValue(asMockUserArray(mockUsers.map(prismaUserToDto)));
       prismaMock.user.count.mockResolvedValue(12);
 
       // Act
@@ -113,7 +115,7 @@ describe('UserService', () => {
       const mockUsers = createMockPrismaUserList(1);
       const options = { state: DataState.INACTIVE };
 
-      prismaMock.user.findMany.mockResolvedValue(mockUsers.map(prismaUserToDto) as any);
+      prismaMock.user.findMany.mockResolvedValue(asMockUserArray(mockUsers.map(prismaUserToDto)));
       prismaMock.user.count.mockResolvedValue(1);
 
       // Act
@@ -132,7 +134,7 @@ describe('UserService', () => {
     it('should return user when found', async () => {
       // Arrange
       const mockUser = createMockPrismaUser();
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(mockUser) as any);
+      prismaMock.user.findUnique.mockResolvedValue(asMockUser(prismaUserToDto(mockUser)));
 
       // Act
       const result = await userService.getUserById(1);
@@ -167,7 +169,7 @@ describe('UserService', () => {
     it('should return user when found', async () => {
       // Arrange
       const mockUser = createMockPrismaUser();
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(mockUser) as any);
+      prismaMock.user.findUnique.mockResolvedValue(asMockUser(prismaUserToDto(mockUser)));
 
       // Act
       const result = await userService.getUserByEmail('test@example.com');
@@ -207,7 +209,7 @@ describe('UserService', () => {
       const mockUser = createMockPrismaUser();
 
       prismaMock.user.findUnique.mockResolvedValue(null); // Email not exists
-      prismaMock.user.create.mockResolvedValue(prismaUserToDto(mockUser) as any);
+      prismaMock.user.create.mockResolvedValue(asMockUser(prismaUserToDto(mockUser)));
 
       // Act
       const result = await userService.createUser(createUserDto);
@@ -236,7 +238,7 @@ describe('UserService', () => {
       const createUserDto = createMockCreateUserDto();
       const existingUser = createMockPrismaUser();
 
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValue(asMockUser(prismaUserToDto(existingUser)));
 
       // Act & Assert
       await expect(userService.createUser(createUserDto)).rejects.toThrow(UserAlreadyExistsError);
@@ -265,9 +267,9 @@ describe('UserService', () => {
       const existingUser = createMockPrismaUser();
       const updatedUser = createMockPrismaUser({ ...updateData });
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // getUserById check
+      prismaMock.user.findUnique.mockResolvedValueOnce(asMockUser(prismaUserToDto(existingUser))); // getUserById check
       prismaMock.user.findUnique.mockResolvedValueOnce(null); // Email availability check
-      prismaMock.user.update.mockResolvedValue(prismaUserToDto(updatedUser) as any);
+      prismaMock.user.update.mockResolvedValue(asMockUser(prismaUserToDto(updatedUser)));
 
       // Act
       const result = await userService.updateUser(userId, updateData);
@@ -307,7 +309,7 @@ describe('UserService', () => {
       const existingUser = createMockPrismaUser();
       const emailOwner = createMockPrismaUser({ id: 2, email: 'taken@example.com' });
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // getUserById check
+      prismaMock.user.findUnique.mockResolvedValueOnce(asMockUser(prismaUserToDto(existingUser))); // getUserById check
       prismaMock.user.findUnique.mockResolvedValueOnce(emailOwner); // Email availability check
 
       // Act & Assert
@@ -323,9 +325,9 @@ describe('UserService', () => {
       const existingUser = createMockPrismaUser({ id: 1, email: 'test@example.com' });
       const updatedUser = createMockPrismaUser({ ...updateData });
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // getUserById check
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any); // Email availability check (same user)
-      prismaMock.user.update.mockResolvedValue(prismaUserToDto(updatedUser) as any);
+      prismaMock.user.findUnique.mockResolvedValueOnce(asMockUser(prismaUserToDto(existingUser))); // getUserById check
+      prismaMock.user.findUnique.mockResolvedValueOnce(asMockUser(prismaUserToDto(existingUser))); // Email availability check (same user)
+      prismaMock.user.update.mockResolvedValue(asMockUser(prismaUserToDto(updatedUser)));
 
       // Act
       const result = await userService.updateUser(userId, updateData);
@@ -340,7 +342,7 @@ describe('UserService', () => {
       const updateData = createMockUpdateUserDto();
       const existingUser = createMockPrismaUser();
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValueOnce(asMockUser(prismaUserToDto(existingUser)));
       prismaMock.user.findUnique.mockResolvedValueOnce(null);
       prismaMock.user.update.mockRejectedValue(new Error('Database error'));
 
@@ -355,8 +357,8 @@ describe('UserService', () => {
       const userId = 1;
       const existingUser = createMockPrismaUser();
 
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(existingUser) as any);
-      prismaMock.user.delete.mockResolvedValue(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValue(asMockUser(prismaUserToDto(existingUser)));
+      prismaMock.user.delete.mockResolvedValue(asMockUser(prismaUserToDto(existingUser)));
 
       // Act
       await userService.deleteUser(userId);
@@ -382,7 +384,7 @@ describe('UserService', () => {
       const userId = 1;
       const existingUser = createMockPrismaUser();
 
-      prismaMock.user.findUnique.mockResolvedValue(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValue(asMockUser(prismaUserToDto(existingUser)));
       prismaMock.user.delete.mockRejectedValue(new Error('Database error'));
 
       // Act & Assert
@@ -397,9 +399,9 @@ describe('UserService', () => {
       const existingUser = createMockPrismaUser();
       const deletedUser = createMockPrismaUser({ state: DataState.DELETED });
 
-      prismaMock.user.findUnique.mockResolvedValueOnce(prismaUserToDto(existingUser) as any);
+      prismaMock.user.findUnique.mockResolvedValueOnce(asMockUser(prismaUserToDto(existingUser)));
       prismaMock.user.findUnique.mockResolvedValueOnce(null);
-      prismaMock.user.update.mockResolvedValue(prismaUserToDto(deletedUser) as any);
+      prismaMock.user.update.mockResolvedValue(asMockUser(prismaUserToDto(deletedUser)));
 
       // Act
       const result = await userService.softDeleteUser(userId);
@@ -428,7 +430,7 @@ describe('UserService', () => {
       const mockUsers = createMockPrismaUserList(2);
       const state = DataState.ACTIVE;
 
-      prismaMock.user.findMany.mockResolvedValue(mockUsers.map(prismaUserToDto) as any);
+      prismaMock.user.findMany.mockResolvedValue(asMockUserArray(mockUsers.map(prismaUserToDto)));
 
       // Act
       const result = await userService.getUsersByState(state);

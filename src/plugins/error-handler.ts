@@ -8,7 +8,7 @@ interface ErrorResponse {
   statusCode: number;
   timestamp: string;
   path: string;
-  details?: any;
+  details?: unknown;
 }
 
 export const errorHandler = fp(async (server: FastifyInstance) => {
@@ -42,7 +42,7 @@ export const errorHandler = fp(async (server: FastifyInstance) => {
 
     // Handle Prisma errors
     if (error.name === 'PrismaClientKnownRequestError') {
-      const prismaError = error as any;
+      const prismaError = error as unknown as { code: string; meta?: unknown };
       let statusCode = 400;
       let message = 'Database error occurred';
 

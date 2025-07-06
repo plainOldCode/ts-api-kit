@@ -130,6 +130,26 @@ The application uses environment variables for configuration:
 
 The project compiles to ES Modules with standard `import` and `export` syntax. Prisma Client generation is included in the prebuild step to ensure type-safe database access.
 
+## Type Safety
+
+The codebase follows strict TypeScript patterns and eliminates all `@typescript-eslint/no-explicit-any` warnings:
+
+- **API Layer**: Uses proper DTOs (`CreateUserDto`, `UpdateUserDto`) instead of `any` types
+- **Error Handling**: Leverages `unknown` type for safer error details and proper Prisma error casting
+- **Test Mocks**: Type-safe mock helpers (`asMockUser`, `asMockUserArray`) replace unsafe `any` casting
+- **Prisma Integration**: Uses generated Prisma types (`User`) instead of custom interfaces
+
+### Type-Safe Testing Patterns
+
+```typescript
+// Type-safe mock helpers in src/test-utils/prisma-mock.ts
+export const asMockUserArray = (users: unknown): User[] => users as User[];
+export const asMockUser = (user: unknown): User => user as User;
+
+// Usage in tests
+prismaMock.user.findMany.mockResolvedValue(asMockUserArray(selectedUsers));
+```
+
 ## Directory Structure
 
 ```

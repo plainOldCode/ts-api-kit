@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { UserQueryOptions } from '../../types';
+import { UserQueryOptions, CreateUserDto, UpdateUserDto } from '../../types';
 import { userSchemas } from '../../schemas';
 
 const users: FastifyPluginAsync = async (server: FastifyInstance) => {
@@ -37,7 +37,7 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
       schema: userSchemas.createUser,
     },
     async (request, reply) => {
-      const userData = request.body as any;
+      const userData = request.body as CreateUserDto;
       const user = await server.services.userService.createUser(userData);
       return reply.code(201).send({
         data: user,
@@ -54,7 +54,7 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
     },
     async (request, reply) => {
       const { id } = request.params as { id: number };
-      const updateData = request.body as any;
+      const updateData = request.body as UpdateUserDto;
       const user = await server.services.userService.updateUser(id, updateData);
       return reply.code(200).send({
         data: user,
