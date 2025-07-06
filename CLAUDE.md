@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Module System**: **ES Modules (ESM)**. All TypeScript import/export statements should use ESM syntax. Relative import paths **do not** need to include the `.js` extension due to `tsconfig-paths` configuration.
 - **Import Paths**: Use relative imports without `.js` extensions (e.g., `import { User } from './entity/user'`)
 - **Linter**: ESLint with Prettier, configured in `eslint.config.js` using ESM syntax
-- **Database**: Requires MySQL version 8.x or higher
+- **Database**: Requires MySQL version 8.x or higher with Prisma ORM
 
 ## Common Commands
 
@@ -26,9 +26,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Database Management
 
-- `npm run migrate:run` - Run TypeORM migrations for local environment
-- `npm run migrate:run-test` - Run TypeORM migrations for test environment
-- `npm run migrate:init-test` - Initialize test database (requires MySQL running)
+- `npm run db:generate` - Generate Prisma Client from schema
+- `npm run db:migrate` - Create and apply new migration in development
+- `npm run db:migrate:deploy` - Apply migrations to production database
+- `npm run db:migrate:test` - Apply migrations to test database
+- `npm run db:reset` - Reset database and apply all migrations
+- `npm run db:studio` - Open Prisma Studio database browser
+- `npm run db:init-test` - Initialize test database (requires MySQL running)
 
 ### Code Quality
 
@@ -40,13 +44,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Core Structure
 
-This is a Fastify-based TypeScript API with TypeORM for database operations:
+This is a Fastify-based TypeScript API with Prisma ORM for database operations:
 
 - **Entry Point**: `src/index.ts` - Application bootstrap
 - **Server Setup**: `src/server.ts` - Fastify server configuration with plugins
-- **Database**: TypeORM with MySQL, configured via `src/data-source/index.ts`
+- **Database**: Prisma ORM with MySQL, schema defined in `prisma/schema.prisma`
 - **API Routes**: Organized under `src/api/v0/` with versioned endpoints
-- **Entities**: TypeORM entities in `src/entity/` with base class inheritance
+- **Database Models**: Prisma models with type-safe client generation
 
 ### Key Patterns
 
@@ -59,10 +63,10 @@ The project uses standard TypeScript imports with relative paths:
 
 #### Database Integration
 
-- DataSource is initialized in `src/db-connection/index.ts` as a Fastify plugin
+- PrismaClient is initialized in `src/db-connection/index.ts` as a Fastify plugin
 - Database connection is decorated onto the Fastify instance as `server.db`
-- Entities extend `BaseEntity` class for common fields (id, timestamps)
-- TypeORM configuration supports environment-specific databases (test vs local)
+- Models are defined in `prisma/schema.prisma` with automatic type generation
+- Prisma configuration supports environment-specific databases (test vs local)
 
 #### API Structure
 
@@ -83,7 +87,8 @@ The application uses environment variables for configuration:
 
 1. Clean previous build (`npm run clean`)
 2. Lint code (`npm run lint`)
-3. Compile TypeScript to ES Modules (`tsc`)
-4. Run from `build/` directory
+3. Generate Prisma Client (`npm run db:generate`)
+4. Compile TypeScript to ES Modules (`tsc`)
+5. Run from `build/` directory
 
-The project compiles to ES Modules with standard `import` and `export` syntax.
+The project compiles to ES Modules with standard `import` and `export` syntax. Prisma Client generation is included in the prebuild step to ensure type-safe database access.

@@ -19,7 +19,7 @@ export const swagger: FastifyPluginAsync = fp(async (server: FastifyInstance) =>
     swagger: {
       info: {
         title: 'Fastify TypeScript Starter API',
-        description: 'A starter API built with Fastify, TypeScript, and TypeORM',
+        description: 'A starter API built with Fastify, TypeScript, and Prisma',
         version: '1.0.0',
       },
       securityDefinitions: {

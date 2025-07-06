@@ -84,3 +84,4 @@ jspm_packages/
 # OS
 .DS_Store
 Thumbs.db
+/src/generated/prisma
