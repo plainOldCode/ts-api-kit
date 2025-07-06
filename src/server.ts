@@ -1,5 +1,7 @@
 import { db } from './db-connection/index';
+import { services } from './services-plugin/index';
 import { PrismaClient } from '@prisma/client';
+import { ServiceContainer } from './services/service-registry';
 import {
   FastifyLoggerInstance,
   RawReplyDefaultExpression,
@@ -18,6 +20,7 @@ declare module 'fastify' {
     Logger = FastifyLoggerInstance,
   > {
     db: PrismaClient;
+    services: ServiceContainer;
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
@@ -27,6 +30,7 @@ import fastifyCors from '@fastify/cors';
 import pino from 'pino';
 import { swagger } from './swagger/index';
 import apiv0 from './api/v0/index';
+import { errorHandler } from './plugins';
 
 export const build = () => {
   const server = fastify({
@@ -42,7 +46,9 @@ export const build = () => {
     optionsSuccessStatus: 204,
   });
 
+  server.register(errorHandler);
   server.register(db);
+  server.register(services);
   server.register(swagger);
   server.register(apiv0, { prefix: '/api/v0' });
 

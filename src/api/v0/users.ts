@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import { UserQueryOptions } from '../../types';
 
 const users: FastifyPluginAsync = async (server: FastifyInstance) => {
   server.get(
@@ -6,20 +7,43 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
     {
       schema: {
         tags: ['Users'],
-        description: 'Get all users',
+        description: 'Get all users with pagination and filtering',
+        querystring: {
+          type: 'object',
+          properties: {
+            page: { type: 'number', minimum: 1, default: 1 },
+            limit: { type: 'number', minimum: 1, maximum: 100, default: 10 },
+            state: { type: 'string', enum: ['ACTIVE', 'INACTIVE', 'PENDING', 'DELETED'] },
+            search: { type: 'string' },
+          },
+        },
         response: {
           200: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                id: { type: 'number' },
-                email: { type: 'string' },
-                firstName: { type: 'string' },
-                lastName: { type: 'string' },
-                state: { type: 'string' },
-                created_at: { type: 'string' },
-                updated_at: { type: 'string' },
+            type: 'object',
+            properties: {
+              data: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'number' },
+                    email: { type: 'string' },
+                    firstName: { type: 'string' },
+                    lastName: { type: 'string' },
+                    state: { type: 'string' },
+                    created_at: { type: 'string' },
+                    updated_at: { type: 'string' },
+                  },
+                },
+              },
+              pagination: {
+                type: 'object',
+                properties: {
+                  page: { type: 'number' },
+                  limit: { type: 'number' },
+                  total: { type: 'number' },
+                  totalPages: { type: 'number' },
+                },
               },
             },
           },
@@ -27,23 +51,9 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      try {
-        const users = await server.db.user.findMany({
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            state: true,
-            created_at: true,
-            updated_at: true,
-          },
-        });
-        return reply.code(200).send(users);
-      } catch (error) {
-        server.log.error(error);
-        return reply.code(500).send({ error: 'Internal Server Error' });
-      }
+      const queryOptions = request.query as UserQueryOptions;
+      const result = await server.services.userService.getAllUsers(queryOptions);
+      return reply.code(200).send(result);
     }
   );
 
@@ -83,30 +93,156 @@ const users: FastifyPluginAsync = async (server: FastifyInstance) => {
       },
     },
     async (request, reply) => {
-      try {
-        const { id } = request.params as { id: number };
-        const user = await server.db.user.findUnique({
-          where: { id },
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            state: true,
-            created_at: true,
-            updated_at: true,
+      const { id } = request.params as { id: number };
+      const user = await server.services.userService.getUserById(id);
+      return reply.code(200).send({
+        data: user,
+        success: true,
+      });
+    }
+  );
+
+  // POST /users - Create a new user
+  server.post(
+    '/users',
+    {
+      schema: {
+        tags: ['Users'],
+        description: 'Create a new user',
+        body: {
+          type: 'object',
+          required: ['name', 'email', 'password'],
+          properties: {
+            name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            password: { type: 'string', minLength: 6 },
+            firstName: { type: 'string' },
+            lastName: { type: 'string' },
+            description: { type: 'string' },
           },
-        });
+        },
+        response: {
+          201: {
+            type: 'object',
+            properties: {
+              data: {
+                type: 'object',
+                properties: {
+                  id: { type: 'number' },
+                  email: { type: 'string' },
+                  firstName: { type: 'string' },
+                  lastName: { type: 'string' },
+                  state: { type: 'string' },
+                  created_at: { type: 'string' },
+                  updated_at: { type: 'string' },
+                },
+              },
+              success: { type: 'boolean' },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const userData = request.body as any;
+      const user = await server.services.userService.createUser(userData);
+      return reply.code(201).send({
+        data: user,
+        success: true,
+      });
+    }
+  );
 
-        if (!user) {
-          return reply.code(404).send({ error: 'User not found' });
-        }
+  // PUT /users/:id - Update a user
+  server.put(
+    '/users/:id',
+    {
+      schema: {
+        tags: ['Users'],
+        description: 'Update a user',
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+          },
+          required: ['id'],
+        },
+        body: {
+          type: 'object',
+          properties: {
+            name: { type: 'string' },
+            email: { type: 'string', format: 'email' },
+            firstName: { type: 'string' },
+            lastName: { type: 'string' },
+            description: { type: 'string' },
+            state: { type: 'string', enum: ['ACTIVE', 'INACTIVE', 'PENDING', 'DELETED'] },
+          },
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              data: {
+                type: 'object',
+                properties: {
+                  id: { type: 'number' },
+                  email: { type: 'string' },
+                  firstName: { type: 'string' },
+                  lastName: { type: 'string' },
+                  state: { type: 'string' },
+                  created_at: { type: 'string' },
+                  updated_at: { type: 'string' },
+                },
+              },
+              success: { type: 'boolean' },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params as { id: number };
+      const updateData = request.body as any;
+      const user = await server.services.userService.updateUser(id, updateData);
+      return reply.code(200).send({
+        data: user,
+        success: true,
+      });
+    }
+  );
 
-        return reply.code(200).send(user);
-      } catch (error) {
-        server.log.error(error);
-        return reply.code(500).send({ error: 'Internal Server Error' });
-      }
+  // DELETE /users/:id - Delete a user
+  server.delete(
+    '/users/:id',
+    {
+      schema: {
+        tags: ['Users'],
+        description: 'Delete a user',
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'number' },
+          },
+          required: ['id'],
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+              success: { type: 'boolean' },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params as { id: number };
+      await server.services.userService.deleteUser(id);
+      return reply.code(200).send({
+        message: 'User deleted successfully',
+        success: true,
+      });
     }
   );
 };
